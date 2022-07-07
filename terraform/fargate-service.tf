@@ -31,7 +31,8 @@ resource "aws_ecs_task_definition" "demo" {
      "portMappings": [
         {
            "containerPort": 3000,
-           "hostPort": 3000
+           "hostPort":3000,
+           "protocol": "tcp"
         }
      ]
   }
@@ -43,7 +44,7 @@ DEFINITION
 resource "aws_ecs_service" "demo" {
   name            = var.project_name
   cluster         = aws_ecs_cluster.main_cluster.id
-  desired_count   = 0
+  desired_count   = 1
   task_definition = aws_ecs_task_definition.demo.arn
   launch_type     = "FARGATE"
   depends_on      = [aws_lb_listener.demo]
@@ -53,9 +54,9 @@ resource "aws_ecs_service" "demo" {
   }
 
   network_configuration {
-    subnets          = slice(module.vpc.private_subnets, 1, 2)
-    security_groups  = [aws_security_group.ecs-demo.id]
-    assign_public_ip = false
+    subnets          = slice(module.vpc.public_subnets, 1, 2)
+    security_groups  = [aws_security_group.ecs-instance-sg.id]
+    assign_public_ip = true
   }
 
   load_balancer {
@@ -65,54 +66,10 @@ resource "aws_ecs_service" "demo" {
   }
   lifecycle {
     ignore_changes = [
-      task_definition,
-      load_balancer
+      task_definition
     ]
   }
 }
-
-# security group
-resource "aws_security_group" "ecs-demo" {
-  name        = "${var.project_name}-ecs-sg"
-  vpc_id      = module.vpc.vpc_id
-  description = "ECS ${var.project_name}"
-
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
-  }
-  egress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "TCP"
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
-  }
-}
-
 # logs
 resource "aws_cloudwatch_log_group" "demo" {
   name = var.project_name
