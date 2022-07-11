@@ -9,7 +9,7 @@ resource "aws_lb" "demo" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs-lb-sg.id]
-  subnets            = module.vpc.private_subnets
+  subnets            = module.vpc.public_subnets
 
 }
 resource "aws_lb_target_group" "demo" {
@@ -49,7 +49,7 @@ resource "aws_lb_listener" "demoOne" {
     redirect {
       port        = "443"
       protocol    = "HTTPS"
-      status_code = "HTTP_302"
+      status_code = "HTTP_101"
     }
 
   }
