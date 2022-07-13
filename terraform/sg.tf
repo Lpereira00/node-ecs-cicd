@@ -50,15 +50,17 @@ resource "aws_security_group" "ecs-instance-sg" {
     to_port           = 443
     type              = "ingress"
   }
-resource aws_security_group_rule "instance_ingress_https" {
+resource aws_security_group_rule "instance_ingress_healthcheck" {
 
-  from_port         = 80
+  from_port         = 3000
   protocol          = "tcp"
   security_group_id = aws_security_group.ecs-instance-sg.id
   source_security_group_id = aws_security_group.ecs-lb-sg.id
-  to_port           = 80
+  to_port           = 3000
   type              = "ingress"
 }
+
+
 
 resource aws_security_group_rule "instance_egress_https" {
 
