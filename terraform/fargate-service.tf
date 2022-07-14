@@ -25,8 +25,10 @@ resource "aws_ecs_task_definition" "demo" {
             }
      },
      "secrets": [],
-     "environmentFiles" : [
-        ],
+     "environmentFiles" : [{
+            "value": "${aws_s3_bucket.env_bucket_storage.arn}/parameters.env",
+            "type" : "s3"
+        }],
      "environment": [],
      "portMappings": [
         {

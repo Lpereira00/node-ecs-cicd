@@ -67,7 +67,7 @@ resource "aws_iam_policy" "ecs-task-execution-role-env" {
           "s3:GetObject"
         ],
         "Resource": [
-          "${aws_s3_bucket.env_bucket_storage.arn}/.env"
+          "${aws_s3_bucket.env_bucket_storage.arn}/parameters.env"
         ]
       }
 
