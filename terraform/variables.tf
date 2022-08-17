@@ -28,9 +28,12 @@ variable "private_subnets_cidr" {
 variable "public_subnets_cidr" {
     type = list
 }
+variable "database_subnets_cidr" {
+    type = list
+}
 
-variable "ecr_repo_name" {
-    type = string
+variable "ecr_repo_names" {
+    type = list
 }
 
 variable "project_name" {

@@ -25,7 +25,7 @@ resource "aws_kms_key" "demo-artifacts" {
 }
 
 resource "aws_kms_alias" "demo-artifacts" {
-  name          = "alias/${var.project_name}-artifacts"
+  name          = "alias/project-artifacts"
   target_key_id = aws_kms_key.demo-artifacts.key_id
 }
 

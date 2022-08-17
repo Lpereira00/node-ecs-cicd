@@ -80,7 +80,7 @@ data "aws_iam_policy_document" "demo-codepipeline-role-policy" {
       "*",
     ]
   }
-  statement { ## REVISAR LA CONDICION
+  statement {
     effect = "Allow"
     actions = [
       "iam:PassRole"

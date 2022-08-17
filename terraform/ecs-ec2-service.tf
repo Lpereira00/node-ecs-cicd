@@ -6,7 +6,7 @@ resource "aws_ecs_task_definition" "demo" {
   memory             = 512
   network_mode       = "awsvpc"
   requires_compatibilities = [
-    "FARGATE"
+    "EC2"
   ]
 
   container_definitions = <<DEFINITION
@@ -14,7 +14,7 @@ resource "aws_ecs_task_definition" "demo" {
   {
     "essential": true,
     "image": "${aws_ecr_repository.main_repository.repository_url}",
-    "name": "${var.ecr_repo_name}",
+    "name": "${var.ecr_repo_names[0]}",
     "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
@@ -37,6 +37,33 @@ resource "aws_ecs_task_definition" "demo" {
            "protocol": "tcp"
         }
      ]
+  },
+  {
+      "essential": false,
+      "image": "${aws_ecr_repository.main_repository.repository_url}",
+      "name": "${var.ecr_repo_names[1]}",
+      "logConfiguration": {
+              "logDriver": "awslogs",
+              "options": {
+                 "awslogs-create-group": "true",
+                 "awslogs-group" : "${var.project_name}",
+                 "awslogs-region": "${var.aws_region}",
+                 "awslogs-stream-prefix": "ecs"
+              }
+       },
+       "secrets": [],
+       "environmentFiles" : [{
+              "value": "${aws_s3_bucket.env_bucket_storage.arn}/parameters.env",
+              "type" : "s3"
+          }],
+       "environment": [],
+       "portMappings": [
+          {
+             "containerPort": 6379,
+             "hostPort": 6379,
+             "protocol": "tcp"
+          }
+       ]
   }
 ]
 DEFINITION
@@ -48,7 +75,7 @@ resource "aws_ecs_service" "demo" {
   cluster         = aws_ecs_cluster.main_cluster.id
   desired_count   = 1
   task_definition = aws_ecs_task_definition.demo.arn
-  launch_type     = "FARGATE"
+  launch_type     = "EC2"
   depends_on      = [aws_lb_listener.demo]
 
   deployment_controller {
@@ -58,12 +85,12 @@ resource "aws_ecs_service" "demo" {
   network_configuration {
     subnets          = slice(module.vpc.public_subnets, 1, 2)
     security_groups  = [aws_security_group.ecs-instance-sg.id]
-    assign_public_ip = true
+
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.demo.id
-    container_name   = var.ecr_repo_name
+    container_name   = var.ecr_repo_names[0]
     container_port   = 3000
   }
   lifecycle {

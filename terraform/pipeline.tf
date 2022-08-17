@@ -32,7 +32,7 @@ resource "aws_codepipeline" "project_pipeline" {
       configuration = {
         BranchName = "master"
         ConnectionArn = aws_codestarconnections_connection.github_connection.arn
-        FullRepositoryId = "Lpereira00/node-hello"
+        FullRepositoryId = "Lpereira00/node-redis"
       }
     }
   }
