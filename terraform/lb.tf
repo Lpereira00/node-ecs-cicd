@@ -1,5 +1,5 @@
 data "aws_acm_certificate" "issued" {
-  domain   = "alblankfactortest.com"
+  domain   = "domainneeded.com"
   statuses = ["ISSUED"]
 }
 
