@@ -1,6 +1,6 @@
 variable "aws_profile" {
     type = string
-    default = "adeptia-playground"
+    default = "profile_needed"
 }
 variable "aws_region" {
     type = string
