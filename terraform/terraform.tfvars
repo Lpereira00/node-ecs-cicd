@@ -1,5 +1,5 @@
 aws_profile = "luis-work"
-account_id = "963982835422"
+account_id = "account_number"
 aws_region = "us-east-1"
 vpc_cidr = "10.0.0.0/16"
 environment = "test"
